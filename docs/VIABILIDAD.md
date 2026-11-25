@@ -39,3 +39,14 @@ Ningún supermercado de los 7 ofrece una API pública oficial de precios (no se 
 | **Alcampo** | Sitemap leído (160 fichas), pero la primera ficha devuelve **HTTP 403** | ⛔ Desactivado: no se insiste ni se disfraza el acceso. Queda por folleto/ticket |
 
 Corrección: la nota anterior decía que la ficha de Ahorramás no tenía JSON-LD. Era una limitación de mi herramienta de lectura web, no de la página: desde GitHub sí aparece.
+
+## Prueba real desde GitHub Actions — 25/11/2026 23:10 (resto de cadenas)
+| Supermercado | Resultado real | Estado |
+|---|---|---|
+| Ahorramás | 4.481 fichas; precios leídos y actualizándose 8 veces/día | ✅ Automático |
+| Aldi | 120 fichas; envasados con precio (yogur natural 1,29 €; vino fino 2,99 €); fruta y verdura **sin precio** en la web | 🟡 Parcial |
+| Lidl | Se lee (8/8 con precio), pero el catálogo online es casi todo bazar/textil, no alimentación | 🟠 Solo folleto/ticket para comida |
+| Carrefour | robots.txt lo permite, pero el sitemap devuelve **HTTP 403** | ⛔ Bloqueado |
+| Alcampo | Fichas **HTTP 403** | ⛔ Bloqueado |
+| Mercadona | API interna no oficial; acceso rechazado por robots | ⛔ No automatizable |
+| Costco | Requiere sesión de socio | ⛔ No automatizable |
