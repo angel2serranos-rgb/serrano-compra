@@ -216,7 +216,8 @@ def test_online_minimum_order_and_fees():
 # ------------------------------------------------------------------ adaptador JSON-LD
 
 def test_jsonld_parser_fixture():
-    html = (open("tests/fixtures/product_jsonld_SIMULADO.html", encoding="utf-8").read())
+    with open("tests/fixtures/product_jsonld_SIMULADO.html", encoding="utf-8") as fh:
+        html = fh.read()
     p = parse_product(html, store_id="test", url="https://ejemplo.invalid/p/1")
     assert p.name == "Leche semidesnatada 1 L" and p.price_text == "0.99"
     assert p.ean == "0000000000000" and p.available is True and p.brand == "MarcaEjemplo"

@@ -16,12 +16,12 @@ from .jsonld import parse_product
 
 _META_PRICE = re.compile(
     r'<meta[^>]+(?:property|name|itemprop)=["\'](?:product:price:amount|og:price:amount|price)["\']'
-    r'[^>]*content=["\']([0-9]+(?:[.,][0-9]{1,2})?)["\']', re.I)
+    r'[^>]*content=["\']([0-9]+(?:[.,][0-9]{1,2})?)["\']', re.IGNORECASE)
 _META_PRICE_REV = re.compile(
     r'<meta[^>]+content=["\']([0-9]+(?:[.,][0-9]{1,2})?)["\'][^>]*'
-    r'(?:property|name|itemprop)=["\'](?:product:price:amount|og:price:amount|price)["\']', re.I)
+    r'(?:property|name|itemprop)=["\'](?:product:price:amount|og:price:amount|price)["\']', re.IGNORECASE)
 _ITEMPROP = re.compile(r'itemprop=["\']price["\'][^>]*content=["\']([0-9]+(?:[.,][0-9]{1,2})?)["\']',
-                       re.I)
+                       re.IGNORECASE)
 
 
 @dataclass(frozen=True)

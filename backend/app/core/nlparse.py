@@ -24,7 +24,7 @@ NUM_WORDS = {
 }
 UNIT_WORDS = r"(kg|kilos?|kilogramos?|g|gr|gramos?|l|litros?|ml|cl|uds?|unidades?|lavados?)"
 NUM = r"(\d+(?:[.,]\d+)?|" + "|".join(sorted(NUM_WORDS, key=len, reverse=True)) + r")"
-FILLER = re.compile(r"^(quiero|necesito|compra(r)?|pon(me)?|añade|anade)\s+", re.I)
+FILLER = re.compile(r"^(quiero|necesito|compra(r)?|pon(me)?|añade|anade)\s+", re.IGNORECASE)
 
 
 def _norm(s: str) -> str:
@@ -54,7 +54,7 @@ def parse_line(line: str, known_brands: set[str] | None = None) -> ParsedLine:
     min_attrs: dict[str, Decimal] = {}
 
     m = re.search(r"(?:con\s+)?(?:un\s+)?m[ií]nimo\s+(?:del?\s+)?(\d+(?:[.,]\d+)?)\s*%\s*(?:de\s+)?(\w+)",
-                  text, re.I)
+                  text, re.IGNORECASE)
     if m:
         key = {"carne": "meat_pct"}.get(m.group(2).lower(), f"{m.group(2).lower()}_pct")
         min_attrs[key] = _num(m.group(1))
@@ -62,19 +62,19 @@ def parse_line(line: str, known_brands: set[str] | None = None) -> ParsedLine:
 
     qty = None
     # "<num> <unidad> de <producto>"
-    m = re.match(rf"^{NUM}\s*{UNIT_WORDS}\.?\s+(?:de\s+)?(.+)$", text, re.I)
+    m = re.match(rf"^{NUM}\s*{UNIT_WORDS}\.?\s+(?:de\s+)?(.+)$", text, re.IGNORECASE)
     if m:
         qty = Quantity.parse(_num(m.group(1)), m.group(2))
         text = m.group(3)
     else:
         # "<producto> de <num> <unidad>" (p. ej. detergente de cien lavados)
-        m = re.match(rf"^(.+?)\s+de\s+{NUM}\s*{UNIT_WORDS}$", text, re.I)
+        m = re.match(rf"^(.+?)\s+de\s+{NUM}\s*{UNIT_WORDS}$", text, re.IGNORECASE)
         if m:
             qty = Quantity.parse(_num(m.group(2)), m.group(3))
             text = m.group(1)
         else:
             # "<num> <producto>" -> unidades
-            m = re.match(rf"^{NUM}\s+(.+)$", text, re.I)
+            m = re.match(rf"^{NUM}\s+(.+)$", text, re.IGNORECASE)
             if m:
                 qty = Quantity.parse(_num(m.group(1)), "ud")
                 text = m.group(2)

@@ -37,14 +37,14 @@ class Quantity:
     unit: Unit
 
     @classmethod
-    def parse(cls, amount: Decimal | int | str, unit: str) -> "Quantity":
+    def parse(cls, amount: Decimal | int | str, unit: str) -> Quantity:
         key = unit.strip().lower().rstrip(".")
         if key not in _ALIASES:
             raise ValueError(f"Unidad desconocida: {unit!r}")
         base, factor = _ALIASES[key]
         return cls(Decimal(str(amount)) * factor, base)
 
-    def same_dimension(self, other: "Quantity") -> bool:
+    def same_dimension(self, other: Quantity) -> bool:
         return self.unit == other.unit
 
 

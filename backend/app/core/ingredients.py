@@ -14,7 +14,7 @@ _MEAT = re.compile(
     r"(jam[oó]n(?:\s+de\s+cerdo)?|paleta(?:\s+de\s+cerdo)?|carne\s+de\s+(?:cerdo|pavo|pollo|vacuno)|"
     r"pechuga\s+de\s+(?:pavo|pollo)|lomo\s+de\s+cerdo)"
     r"[^0-9%,;.]{0,12}?[\(_\s]*(\d{1,3}(?:[.,]\d+)?)\s*_*\s*%",
-    re.I)
+    re.IGNORECASE)
 
 
 def meat_pct(ingredients: str | None) -> Decimal | None:

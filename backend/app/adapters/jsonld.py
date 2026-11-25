@@ -13,7 +13,7 @@ from typing import Any
 from .base import RawProduct
 
 _SCRIPT = re.compile(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
-                     re.S | re.I)
+                     re.DOTALL | re.IGNORECASE)
 
 
 def _walk(node: Any):

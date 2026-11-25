@@ -22,13 +22,13 @@ def to_cents(value: str | int | Decimal) -> Cents:
         if "," in value:  # formato ES: 1.234,56
             value = value.replace(".", "").replace(",", ".")
         value = Decimal(value)
-    return int((value * 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    return int((value * 100).quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
 def mul_round(cents: Cents, factor: Decimal | str) -> Cents:
     """Multiplica céntimos por un factor y redondea al céntimo (half-up)."""
     result = Decimal(cents) * Decimal(factor)
-    return int(result.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    return int(result.quantize(Decimal(1), rounding=ROUND_HALF_UP))
 
 
 def fmt_eur(cents: Cents) -> str:
