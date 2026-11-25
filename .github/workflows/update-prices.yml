@@ -44,11 +44,12 @@ jobs:
         working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: python -m app.jobs.run_update "${{ github.event.schedule || 'manual' }}" ../status
+          SLOT: ${{ github.event.schedule || 'manual' }}
+        run: python -m app.jobs.run_update "$SLOT" ..
       - name: Guardar registro verificable
         run: |
           git config user.name "serrano-bot"
           git config user.email "serrano-bot@users.noreply.github.com"
-          git add status/
+          git add status/ data/
           git diff --cached --quiet || git commit -m "registro: actualización $(TZ=Europe/Madrid date '+%d/%m/%Y %H:%M')"
           git push
