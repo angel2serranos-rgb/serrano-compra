@@ -31,6 +31,7 @@ def discover(store_id: str, n: int, out: Path, adapter=None, match: str = "") ->
         report["blocked"] = str(e)
         return _save(report, out, store_id)
     report["sample_urls_found"] = len(urls)
+    report["sitemap_sample"] = getattr(adapter, "sitemap_sample", [])[:15]
     if words:
         picked: list[str] = []
         for w in words:                       # hasta n fichas por palabra, en orden

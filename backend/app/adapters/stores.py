@@ -30,12 +30,17 @@ class SitemapAdapter(StoreAdapter):
         self.limit = limit
 
     def product_urls(self) -> list[str]:
-        children, _ = parse_sitemap(self.client.get(self.sitemap_index))
+        self.sitemap_sample: list[str] = []          # para el informe si nada encaja
         urls: list[str] = []
-        for sm in children:
-            if self.product_sitemap_hint not in sm:
-                continue
-            _, locs = parse_sitemap(self.client.get(sm))
+        pending = [self.sitemap_index]
+        seen = 0
+        while pending and seen < 40:                 # tope de sitemaps leídos por pase
+            sm = pending.pop(0)
+            seen += 1
+            children, locs = parse_sitemap(self.client.get(sm))
+            pending += [c for c in children if self.product_sitemap_hint in c]
+            if len(self.sitemap_sample) < 15:
+                self.sitemap_sample += locs[: 15 - len(self.sitemap_sample)]
             urls.extend(u for u in locs if self.id_pattern.search(u))
             if self.limit and len(urls) >= self.limit:
                 return urls[: self.limit]
@@ -77,4 +82,35 @@ class AhorramasAdapter(SitemapAdapter):
     coverage_note = "Precio online; frescos al corte con precio €/kg"
 
 
-ADAPTER_CLASSES = {c.store_id: c for c in (AlcampoAdapter, AhorramasAdapter)}
+class CarrefourAdapter(SitemapAdapter):
+    """Sitemap de alimentación declarado en su robots.txt. Fichas /supermercado/.../R-<id>/p."""
+    store_id = "carrefour"
+    name = "Carrefour"
+    base_url = "https://www.carrefour.es"
+    sitemap_index = base_url + "/crs/cdn-static/sitemap-food/index.xml"
+    product_sitemap_hint = ""
+    id_pattern = re.compile(r"/R-([A-Za-z0-9-]+)/p/?$")
+
+
+class LidlAdapter(SitemapAdapter):
+    """Sitemap declarado en robots.txt. Patrón de ficha por confirmar en reconocimiento."""
+    store_id = "lidl"
+    name = "Lidl"
+    base_url = "https://www.lidl.es"
+    sitemap_index = base_url + "/static/sitemap.xml"
+    product_sitemap_hint = ""
+    id_pattern = re.compile(r"/p(\d{5,})/?$")
+
+
+class AldiAdapter(SitemapAdapter):
+    """Sitemap declarado en robots.txt. Patrón de ficha por confirmar en reconocimiento."""
+    store_id = "aldi"
+    name = "Aldi"
+    base_url = "https://www.aldi.es"
+    sitemap_index = base_url + "/.aldi-nord-sitemap.xml"
+    product_sitemap_hint = ""
+    id_pattern = re.compile(r"-(\d{6,})\.html$")
+
+
+ADAPTER_CLASSES = {c.store_id: c for c in (AlcampoAdapter, AhorramasAdapter, CarrefourAdapter,
+                                           LidlAdapter, AldiAdapter)}
