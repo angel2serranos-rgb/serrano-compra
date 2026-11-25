@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ..adapters.base import SourceBlocked
-from ..adapters.extract import describe_page, extract_price, jsonld_excerpt
+from ..adapters.extract import describe_page, extract_price, jsonld_excerpt, text_clues
 from ..adapters.stores import ADAPTER_CLASSES
 from ..core.freshness import MADRID
 
@@ -58,7 +58,8 @@ def discover(store_id: str, n: int, out: Path, adapter=None, match: str = "") ->
         entry.update(file=fname, **describe_page(html),
                      generic_price=ex.price_text if ex else None,
                      strategy=ex.strategy if ex else None,
-                     jsonld_excerpt=jsonld_excerpt(html))
+                     jsonld_excerpt=jsonld_excerpt(html, 600),
+                     clues=text_clues(html))
         report["pages"].append(entry)
     return _save(report, out, store_id)
 

@@ -66,3 +66,22 @@ def jsonld_excerpt(html: str, max_chars: int = 1500) -> str | None:
         if '"product"' in block.lower():
             return " ".join(block.split())[:max_chars]
     return None
+
+
+_TAGS = re.compile(r"<script.*?</script>|<style.*?</style>|<[^>]+>", re.DOTALL | re.IGNORECASE)
+_CLUES = re.compile(r"(€\s*/\s*(?:kg|l|ud|unidad)|peso variable|ingredientes|\bkg\b|bandeja|malla|\d+\s*%)",
+                    re.IGNORECASE)
+
+
+def text_clues(html: str, radius: int = 90, max_hits: int = 8) -> list[str]:
+    """Fragmentos cortos de texto visible alrededor de pistas de formato/unidad/ingredientes.
+    Solo para el informe de reconocimiento (desarrollar el lector), no se publican."""
+    text = " ".join(_TAGS.sub(" ", html).split())
+    hits: list[str] = []
+    for m in _CLUES.finditer(text):
+        frag = text[max(0, m.start() - radius): m.end() + radius]
+        if not any(frag[20:-20] in h for h in hits):
+            hits.append(frag)
+        if len(hits) >= max_hits:
+            break
+    return hits
