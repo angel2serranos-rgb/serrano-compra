@@ -1,0 +1,54 @@
+# Actualización programada de precios. Corre en GitHub (tu PC puede estar apagado).
+# Horas en hora de Madrid (soporte de timezone en Actions desde marzo de 2026).
+# Minutos desplazados de :00 a propósito: en punto hay más retrasos y descartes.
+# AVISO: GitHub no garantiza puntualidad exacta; por eso hay varios pases antes de las 10:00.
+name: update-prices
+
+on:
+  schedule:
+    - cron: "37 0 * * *"    # 00:37 detección de cambio de día
+      timezone: "Europe/Madrid"
+    - cron: "7 6 * * *"     # 06:07 actualización principal
+      timezone: "Europe/Madrid"
+    - cron: "7 8 * * *"     # 08:07 incremental
+      timezone: "Europe/Madrid"
+    - cron: "7 9 * * *"     # 09:07 promociones
+      timezone: "Europe/Madrid"
+    - cron: "37 9 * * *"    # 09:37 reintento de pendientes
+      timezone: "Europe/Madrid"
+    - cron: "52 9 * * *"    # 09:52 control final
+      timezone: "Europe/Madrid"
+    - cron: "7 14 * * *"    # 14:07 incremental
+      timezone: "Europe/Madrid"
+    - cron: "7 20 * * *"    # 20:07 revisión
+      timezone: "Europe/Madrid"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write           # para guardar el registro diario (y evitar la pausa de 60 días)
+
+concurrency:
+  group: update-prices
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Ejecutar actualización
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python -m app.jobs.run_update "${{ github.event.schedule || 'manual' }}" ../status
+      - name: Guardar registro verificable
+        run: |
+          git config user.name "serrano-bot"
+          git config user.email "serrano-bot@users.noreply.github.com"
+          git add status/
+          git diff --cached --quiet || git commit -m "registro: actualización $(TZ=Europe/Madrid date '+%d/%m/%Y %H:%M')"
+          git push

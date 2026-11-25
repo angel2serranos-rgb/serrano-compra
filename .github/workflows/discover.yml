@@ -1,0 +1,36 @@
+# Modo reconocimiento (manual): baja unas pocas fichas reales para escribir el parser exacto.
+# Los HTML se guardan como artefacto privado de la ejecución (7 días), no en el repo.
+name: discover
+
+on:
+  workflow_dispatch:
+    inputs:
+      store:
+        description: "Supermercado (alcampo | ahorramas)"
+        required: true
+        default: "alcampo"
+      pages:
+        description: "Número de fichas (máx. 15)"
+        required: true
+        default: "8"
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Reconocimiento
+        working-directory: backend
+        env:                       # vía env, nunca interpolado en el script (evita inyección)
+          STORE: ${{ github.event.inputs.store }}
+          PAGES: ${{ github.event.inputs.pages }}
+        run: python -m app.jobs.discover "$STORE" "$PAGES" ../discovery
+      - uses: actions/upload-artifact@v4
+        with:
+          name: discovery-${{ github.event.inputs.store }}
+          path: discovery/
+          retention-days: 7
