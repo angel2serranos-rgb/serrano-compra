@@ -12,7 +12,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from .jsonld import parse_product
+from .jsonld import _SCRIPT, parse_product
 
 _META_PRICE = re.compile(
     r'<meta[^>]+(?:property|name|itemprop)=["\'](?:product:price:amount|og:price:amount|price)["\']'
@@ -58,3 +58,11 @@ def describe_page(html: str) -> dict:
         "has_initial_state": "__initial_state__" in low or "__preloaded_state__" in low,
         "looks_like_captcha": "captcha" in low[:5000],
     }
+
+
+def jsonld_excerpt(html: str, max_chars: int = 1500) -> str | None:
+    """Primer bloque JSON-LD que contenga un Product, recortado (para el informe)."""
+    for block in _SCRIPT.findall(html):
+        if '"product"' in block.lower():
+            return " ".join(block.split())[:max_chars]
+    return None

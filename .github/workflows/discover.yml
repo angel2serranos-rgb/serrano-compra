@@ -13,6 +13,10 @@ on:
         description: "Número de fichas (máx. 15)"
         required: true
         default: "8"
+      filter:
+        description: "Opcional: palabras de la URL separadas por comas (ej. jamon-cocido,tomate)"
+        required: false
+        default: ""
 
 jobs:
   discover:
@@ -28,7 +32,8 @@ jobs:
         env:                       # vía env, nunca interpolado en el script (evita inyección)
           STORE: ${{ github.event.inputs.store }}
           PAGES: ${{ github.event.inputs.pages }}
-        run: python -m app.jobs.discover "$STORE" "$PAGES" ../discovery
+          FILTER: ${{ github.event.inputs.filter }}
+        run: python -m app.jobs.discover "$STORE" "$PAGES" ../discovery "$FILTER"
       - uses: actions/upload-artifact@v4
         with:
           name: discovery-${{ github.event.inputs.store }}

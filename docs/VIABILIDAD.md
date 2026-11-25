@@ -31,3 +31,11 @@ Ningún supermercado de los 7 ofrece una API pública oficial de precios (no se 
 - **Ahorramás:** sitemap de productos con fichas `/<nombre>-<id>.html`. En la ficha de prueba (jamón cocido extra Campofrío, al corte) **no hay JSON-LD**: el precio (14,29 €/kg, peso variable 100–250 g) va como texto. Necesita un lector propio, que solo se escribirá tras ver el HTML real.
 - **Aviso de calidad:** muchos jamones "extra" del mercado declaran **92 %** de carne (etiquetas publicadas por OCU y en fichas de Alcampo). Con tu mínimo del 93 % quedarán excluidos: es lo correcto, pero la lista de candidatos será corta.
 - **Comparadores de terceros también fallan:** se han visto publicados "1 kg de jamón a 1,85 €/kg" o leche a "954 €/l". Por eso cada precio pasa controles de plausibilidad antes de usarse.
+
+## Prueba real desde GitHub Actions — 25/11/2026 22:40
+| Supermercado | Resultado | Decisión |
+|---|---|---|
+| **Ahorramás** | 160 fichas listadas; **8 de 8** descargadas con precio en JSON-LD (p. ej. garbanzos Litoral 425 g: 2,15 €; yogur oveja Yaranza 140 g: 1,35 €) | ✅ Primera fuente automática real |
+| **Alcampo** | Sitemap leído (160 fichas), pero la primera ficha devuelve **HTTP 403** | ⛔ Desactivado: no se insiste ni se disfraza el acceso. Queda por folleto/ticket |
+
+Corrección: la nota anterior decía que la ficha de Ahorramás no tenía JSON-LD. Era una limitación de mi herramienta de lectura web, no de la página: desde GitHub sí aparece.

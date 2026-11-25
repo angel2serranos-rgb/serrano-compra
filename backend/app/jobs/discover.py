@@ -15,13 +15,15 @@ from datetime import datetime
 from pathlib import Path
 
 from ..adapters.base import SourceBlocked
-from ..adapters.extract import describe_page, extract_price
+from ..adapters.extract import describe_page, extract_price, jsonld_excerpt
 from ..adapters.stores import ADAPTER_CLASSES
 from ..core.freshness import MADRID
 
 
-def discover(store_id: str, n: int, out: Path, adapter=None) -> dict:
-    adapter = adapter or ADAPTER_CLASSES[store_id](limit=max(n * 20, 50))
+def discover(store_id: str, n: int, out: Path, adapter=None, match: str = "") -> dict:
+    """`match`: palabras separadas por comas para elegir fichas concretas (p. ej. 'jamon-cocido')."""
+    words = [w.strip().lower() for w in match.split(",") if w.strip()]
+    adapter = adapter or ADAPTER_CLASSES[store_id](limit=None if words else max(n * 20, 50))
     report: dict = {"store": store_id, "at": datetime.now(MADRID).isoformat(), "pages": []}
     try:
         urls = adapter.product_urls()
@@ -29,8 +31,15 @@ def discover(store_id: str, n: int, out: Path, adapter=None) -> dict:
         report["blocked"] = str(e)
         return _save(report, out, store_id)
     report["sample_urls_found"] = len(urls)
-    step = max(1, len(urls) // n) if urls else 1
-    for url in urls[::step][:n]:
+    if words:
+        picked: list[str] = []
+        for w in words:                       # hasta n fichas por palabra, en orden
+            picked += [u for u in urls if w in u.lower() and u not in picked][: max(1, n // len(words))]
+        urls_to_get = picked[:n]
+    else:
+        step = max(1, len(urls) // n) if urls else 1
+        urls_to_get = urls[::step][:n]
+    for url in urls_to_get:
         entry: dict = {"url": url}
         try:
             html = adapter.client.get(url)
@@ -48,7 +57,8 @@ def discover(store_id: str, n: int, out: Path, adapter=None) -> dict:
         ex = extract_price(html, store_id=store_id, url=url)
         entry.update(file=fname, **describe_page(html),
                      generic_price=ex.price_text if ex else None,
-                     strategy=ex.strategy if ex else None)
+                     strategy=ex.strategy if ex else None,
+                     jsonld_excerpt=jsonld_excerpt(html))
         report["pages"].append(entry)
     return _save(report, out, store_id)
 
@@ -66,4 +76,5 @@ if __name__ == "__main__":
         sys.exit(f"Supermercado no soportado: {sid!r}. Opciones: {sorted(ADAPTER_CLASSES)}")
     count = min(int(sys.argv[2]) if len(sys.argv) > 2 else 8, 15)
     dest = Path(sys.argv[3]) if len(sys.argv) > 3 else Path("discovery")
-    print(json.dumps(discover(sid, count, dest), ensure_ascii=False, indent=2))
+    flt = sys.argv[4] if len(sys.argv) > 4 else ""
+    print(json.dumps(discover(sid, count, dest, match=flt), ensure_ascii=False, indent=2))

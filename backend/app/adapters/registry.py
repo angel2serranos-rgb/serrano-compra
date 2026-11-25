@@ -22,10 +22,12 @@ class StoreInfo:
 
 STORES: dict[str, StoreInfo] = {s.id: s for s in [
     StoreInfo("ahorramas", "Ahorramás", "https://www.ahorramas.com", True,
-              ("online_oficial",), "Por validar: fichas desde sitemap (robots lo permite)"),
-    StoreInfo("alcampo", "Alcampo", "https://www.compraonline.alcampo.es", True,
-              ("online_oficial", "folleto"),
-              "Por validar: precio depende de la tienda elegida"),
+              ("online_oficial",),
+              "Funciona desde GitHub: 8/8 fichas con precio JSON-LD (25/11/2026)"),
+    StoreInfo("alcampo", "Alcampo", "https://www.compraonline.alcampo.es", False,
+              ("folleto", "ticket", "manual"),
+              "Sitemap legible; fichas bloqueadas desde GitHub (HTTP 403, 25/11/2026)",
+              "HTTP 403 desde servidores de GitHub: no se insiste ni se disfraza el acceso"),
     StoreInfo("carrefour", "Carrefour", "https://www.carrefour.es", False,
               ("online_oficial",), "Fichas permitidas por robots, pero protegidas contra bots",
               "Protección anti-bots: probable bloqueo desde GitHub Actions"),

@@ -5,7 +5,8 @@
   /products/<slug>/<id>; muestran precio, €/kg, EAN e ingredientes.
 - Ahorramás: índice /sitemap_index.xml con sitemap_0-product.xml. Fichas tipo
   /<slug>-<id>.html. Los frescos al corte son "PESO VARIABLE" con precio €/kg.
-  En una ficha de prueba no se detectó JSON-LD → necesita selector propio (Fase 5).
+  Reconocimiento real 25/11/2026 desde GitHub: 8/8 fichas con JSON-LD Product y precio.
+- Alcampo: reconocimiento real 25/11/2026 → sitemap OK, fichas HTTP 403. Desactivado.
 
 El parseo definitivo de cada web se escribe DESPUÉS de ver su HTML real con el
 modo reconocimiento (app/jobs/discover.py). Hasta entonces, solo la cascada genérica.
