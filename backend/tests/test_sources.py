@@ -119,3 +119,28 @@ def test_discover_job_offline(tmp_path):
     assert "blocked" in rep["pages"][1]
     saved = json.loads((tmp_path / "alcampo" / "informe.json").read_text("utf-8"))
     assert saved["sample_urls_found"] == 2
+
+
+def test_gzip_sitemap():
+    import gzip as gz
+
+    class Raw:
+        def __init__(self, pages):
+            self.pages = pages
+
+        def get_raw(self, url):
+            return self.pages[url]
+
+        def get(self, url):
+            return self.pages[url].decode()
+
+    from app.adapters.stores import LidlAdapter
+    base = LidlAdapter.base_url
+    idx = (b'<?xml version="1.0"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+           b"<sitemap><loc>" + base.encode() + b"/p/export/ES/es/product_sitemap.xml.gz</loc></sitemap>"
+           b"</sitemapindex>")
+    child = gz.compress(b'<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+                        b"<url><loc>" + base.encode() + b"/p/leche-entera/p100123456</loc></url></urlset>")
+    a = LidlAdapter(client=Raw({base + "/static/sitemap.xml": idx,
+                                base + "/p/export/ES/es/product_sitemap.xml.gz": child}))
+    assert [a.external_id(u) for u in a.product_urls()] == ["100123456"]

@@ -13,6 +13,7 @@ modo reconocimiento (app/jobs/discover.py). Hasta entonces, solo la cascada gen√
 """
 from __future__ import annotations
 
+import gzip
 import re
 
 from .base import PoliteClient, RawProduct, StoreAdapter
@@ -37,7 +38,7 @@ class SitemapAdapter(StoreAdapter):
         while pending and seen < 40:                 # tope de sitemaps le√≠dos por pase
             sm = pending.pop(0)
             seen += 1
-            children, locs = parse_sitemap(self.client.get(sm))
+            children, locs = parse_sitemap(self._sitemap_text(sm))
             pending += [c for c in children if self.product_sitemap_hint in c]
             if len(self.sitemap_sample) < 15:
                 self.sitemap_sample += locs[: 15 - len(self.sitemap_sample)]
@@ -45,6 +46,16 @@ class SitemapAdapter(StoreAdapter):
             if self.limit and len(urls) >= self.limit:
                 return urls[: self.limit]
         return urls
+
+    def _sitemap_text(self, url: str) -> str:
+        """Admite sitemaps .xml.gz (Lidl)."""
+        get_raw = getattr(self.client, "get_raw", None)
+        if get_raw is None:
+            return self.client.get(url)
+        raw = get_raw(url)
+        if raw[:2] == b"\x1f\x8b":
+            raw = gzip.decompress(raw)
+        return raw.decode("utf-8", "replace")
 
     def external_id(self, url: str) -> str:
         m = self.id_pattern.search(url)

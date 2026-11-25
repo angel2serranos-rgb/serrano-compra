@@ -71,6 +71,16 @@ class PoliteClient:
         self._robots_loaded = True
 
     def get(self, url: str) -> str:
+        raw, charset = self._fetch(url)
+        body = raw.decode(charset or "utf-8", "replace")
+        if "captcha" in body.lower()[:5000]:
+            raise SourceBlocked(f"CAPTCHA detectado en {url}: se detiene sin eludirlo")
+        return body
+
+    def get_raw(self, url: str) -> bytes:
+        return self._fetch(url)[0]
+
+    def _fetch(self, url: str) -> tuple[bytes, str | None]:
         if urlparse(url).netloc != urlparse(self.base_url).netloc:
             raise ValueError("URL fuera del dominio del adaptador")
         if not self.allowed(url):
@@ -82,16 +92,13 @@ class PoliteClient:
                                                    "Accept-Language": "es-ES"})
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                body = resp.read().decode(resp.headers.get_content_charset() or "utf-8", "replace")
+                return resp.read(), resp.headers.get_content_charset()
         except urllib.error.HTTPError as e:
             if e.code in (401, 403, 429):
                 raise SourceBlocked(f"HTTP {e.code} en {url}") from e
             raise
         finally:
             self._last = time.monotonic()
-        if "captcha" in body.lower()[:5000]:
-            raise SourceBlocked(f"CAPTCHA detectado en {url}: se detiene sin eludirlo")
-        return body
 
 
 class StoreAdapter(ABC):
