@@ -1,0 +1,60 @@
+[
+  {
+    "slot": "manual",
+    "started_at": "2026-11-25T22:50:24.205626+01:00",
+    "sources": {
+      "ahorramas": {
+        "name": "Ahorramás",
+        "automated": true,
+        "coverage": "lista de seguimiento (no catálogo completo)",
+        "state": "Actualizado hoy",
+        "checked": 6,
+        "expected": 6,
+        "errors": []
+      },
+      "alcampo": {
+        "name": "Alcampo",
+        "automated": false,
+        "coverage": "Sitemap legible; fichas bloqueadas desde GitHub (HTTP 403, 25/11/2026)",
+        "state": "Pendiente de actualizar",
+        "note": "HTTP 403 desde servidores de GitHub: no se insiste ni se disfraza el acceso"
+      },
+      "carrefour": {
+        "name": "Carrefour",
+        "automated": false,
+        "coverage": "Fichas permitidas por robots, pero protegidas contra bots",
+        "state": "Pendiente de actualizar",
+        "note": "Protección anti-bots: probable bloqueo desde GitHub Actions"
+      },
+      "mercadona": {
+        "name": "Mercadona",
+        "automated": false,
+        "coverage": "Solo tickets/manual hasta verificar condiciones",
+        "state": "Pendiente de actualizar",
+        "note": "API interna no oficial; nuestro acceso de prueba fue rechazado por robots.txt"
+      },
+      "lidl": {
+        "name": "Lidl",
+        "automated": true,
+        "coverage": "Parcial: ofertas y folleto, no catálogo completo",
+        "state": "Pendiente de actualizar",
+        "note": "lector pendiente de validar"
+      },
+      "aldi": {
+        "name": "Aldi",
+        "automated": true,
+        "coverage": "Parcial: ofertas y folleto, no catálogo completo",
+        "state": "Pendiente de actualizar",
+        "note": "lector pendiente de validar"
+      },
+      "costco": {
+        "name": "Costco",
+        "automated": false,
+        "coverage": "Solo tickets/manual",
+        "state": "Pendiente de actualizar",
+        "note": "Compra online solo para socios con sesión iniciada: no se automatiza"
+      }
+    },
+    "finished_at": "2026-11-25T22:50:41.925483+01:00"
+  }
+]
