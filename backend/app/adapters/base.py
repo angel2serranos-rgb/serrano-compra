@@ -53,9 +53,22 @@ class PoliteClient:
 
     def allowed(self, url: str) -> bool:
         if not self._robots_loaded:
-            self._robots.read()
-            self._robots_loaded = True
+            self._load_robots()
         return self._robots.can_fetch(USER_AGENT, url)
+
+    def _load_robots(self) -> None:
+        """Lee robots.txt. 401/403 = la web nos bloquea (no 'prohibido por robots')."""
+        req = urllib.request.Request(self.base_url + "/robots.txt",
+                                     headers={"User-Agent": USER_AGENT})
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                lines = resp.read().decode("utf-8", "replace").splitlines()
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403, 429):
+                raise SourceBlocked(f"HTTP {e.code} al leer robots.txt: la web bloquea el acceso") from e
+            lines = []                                  # 404 → sin restricciones (estándar)
+        self._robots.parse(lines)
+        self._robots_loaded = True
 
     def get(self, url: str) -> str:
         if urlparse(url).netloc != urlparse(self.base_url).netloc:

@@ -30,6 +30,13 @@ def discover(store_id: str, n: int, out: Path, adapter=None, match: str = "") ->
     except SourceBlocked as e:
         report["blocked"] = str(e)
         return _save(report, out, store_id)
+    except Exception as e:                  # noqa: BLE001 - p. ej. sitemap que no es XML
+        report["error"] = repr(e)
+        try:
+            report["sitemap_head"] = adapter.client.get(adapter.sitemap_index)[:300]
+        except Exception as e2:             # noqa: BLE001
+            report["sitemap_head_error"] = repr(e2)
+        return _save(report, out, store_id)
     report["sample_urls_found"] = len(urls)
     report["sitemap_sample"] = getattr(adapter, "sitemap_sample", [])[:15]
     if words:
