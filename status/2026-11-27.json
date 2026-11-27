@@ -1,0 +1,60 @@
+[
+  {
+    "slot": "37 0 * * *",
+    "started_at": "2026-11-27T01:33:35.632603+01:00",
+    "sources": {
+      "ahorramas": {
+        "name": "Ahorramás",
+        "automated": true,
+        "coverage": "lista de seguimiento (no catálogo completo)",
+        "state": "Actualizado hoy",
+        "checked": 6,
+        "expected": 6,
+        "errors": []
+      },
+      "alcampo": {
+        "name": "Alcampo",
+        "automated": false,
+        "coverage": "Sitemap legible; fichas bloqueadas desde GitHub (HTTP 403, 25/11/2026)",
+        "state": "Pendiente de actualizar",
+        "note": "HTTP 403 desde servidores de GitHub: no se insiste ni se disfraza el acceso"
+      },
+      "carrefour": {
+        "name": "Carrefour",
+        "automated": false,
+        "coverage": "Sin lectura automática",
+        "state": "Pendiente de actualizar",
+        "note": "HTTP 403 al sitemap de alimentación desde GitHub (25/11/2026)"
+      },
+      "mercadona": {
+        "name": "Mercadona",
+        "automated": false,
+        "coverage": "Solo tickets/manual hasta verificar condiciones",
+        "state": "Pendiente de actualizar",
+        "note": "API interna no oficial; nuestro acceso de prueba fue rechazado por robots.txt"
+      },
+      "lidl": {
+        "name": "Lidl",
+        "automated": false,
+        "coverage": "La web se lee (8/8 con precio), pero su catálogo online es casi todo no alimentación",
+        "state": "Pendiente de actualizar",
+        "note": "Alimentación no está en la tienda online: solo folleto/ticket"
+      },
+      "aldi": {
+        "name": "Aldi",
+        "automated": true,
+        "coverage": "Parcial: envasados con precio (JSON-LD); frutas y verduras sin precio online",
+        "state": "Pendiente de actualizar",
+        "note": "lector pendiente de validar"
+      },
+      "costco": {
+        "name": "Costco",
+        "automated": false,
+        "coverage": "Solo tickets/manual",
+        "state": "Pendiente de actualizar",
+        "note": "Compra online solo para socios con sesión iniciada: no se automatiza"
+      }
+    },
+    "finished_at": "2026-11-27T01:33:53.764690+01:00"
+  }
+]
